@@ -2,14 +2,16 @@ try:
     from RPG.character import Character
 except ImportError:
     from character import Character
-
+# *--------2. 敵キャラクターの基底クラスを作成します。--------*
 
 class Enemy(Character):
+    # 敵キャラクターの基底クラスです。
     def __init__(self, name, health, power, speed, mp):
         super().__init__(name, health, power, speed, mp)
 
-#スライムクラスの説明。
+
 class Slime(Enemy):
+    # 体力が低くなると回復するスライムです。
     def __init__(self, name, health, power, speed, mp):
         super().__init__(name, health, power, speed, mp)
         self.heal_threshold = 0.5
@@ -23,8 +25,9 @@ class Slime(Enemy):
         else:
             super().attack(target)
 
-#ゴブリンクラスの説明。
+
 class Goblin(Enemy):
+    # 体力が低くなると攻撃力が上がるゴブリンです。
     def __init__(self, name, health, power, speed, mp):
         super().__init__(name, health, power, speed, mp)
         self.power_threshold = 0.3

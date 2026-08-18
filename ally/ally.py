@@ -1,13 +1,16 @@
-#味方側の基底クラス
+# 味方側の基底クラスです。
 try:
     from RPG.character import Character
     from RPG.magic.magic import Magic
 except ImportError:
     from character import Character
     from magic.magic import Magic
-
+#3. 味方キャラクターの基底クラスを作成します。
 
 class Ally(Character):
+    # プレイヤーが操作する味方キャラクターです。
+    # 攻撃・魔法・アイテムの選択を行います。
+
     def __init__(self, name, health, power, speed, mp):
         initial_magic = [
             Magic("ファイア", 10, 25),
@@ -17,6 +20,7 @@ class Ally(Character):
         super().__init__(name, health, power, speed, mp, magic_list=initial_magic)
 
     def attack(self, target):
+        # 戦闘中のコマンド選択を行います。
         if not self.is_alive():
             return
 
@@ -25,55 +29,75 @@ class Ally(Character):
             if command == 1:
                 super().attack(target)
                 return
-            if command == 2:
+            elif command == 2:
                 if not self.available_magic():
                     print("使用可能な魔法がありません。")
                     continue
                 self.select_magic(target)
                 return
-            if command == 3:
+            elif command == 3:
                 print("アイテムを使用する処理をここに追加してください。")
                 return
+            else:
+                print("無効な選択肢です。再度選択してください。")
 
-            print("無効な選択肢です。再度選択してください。")
-            
     def available_magic(self):
-        return [spell for spell in self.magic if spell.can_use(self)]
-    
+        # 使える魔法だけを取り出します。
+        usable_magic = []
+        for spell in self.magic:
+            if spell.can_use(self):
+                usable_magic.append(spell)
+        return usable_magic
+
     def select_command(self):
+        # どの行動を取るかを選びます。
         print(f"{self.name}のコマンドを選択してください。")
         print("1. 攻撃")
         print("2. 魔法")
         print("3. アイテム")
         choice = input("選択肢を入力してください: ")
-        if choice not in {"1", "2", "3"}:
+        if choice not in ["1", "2", "3"]:
             print("無効な選択肢です。再度選択してください。")
             return self.select_command()
         return int(choice)
 
     def select_magic(self, target):
+        # 使用する魔法を選びます。
         usable_spells = self.available_magic()
         print(f"{self.name}の使用可能な魔法:")
-        for index, spell in enumerate(usable_spells, start=1):
+
+        index = 1
+        for spell in usable_spells:
             print(f"{index}. {spell.name} (MP: {spell.mp_cost}, 威力: {spell.power})")
+            index += 1
         print("0. 戻る")
 
         choice = input("使用する魔法を選択してください: ")
         if choice == "0":
-            return self.attack(target)
+            self.attack(target)
+            return
 
-        if not choice.isdigit() or int(choice) < 1 or int(choice) > len(usable_spells):
+        if not choice.isdigit():
             print("無効な選択肢です。再度選択してください。")
-            return self.select_magic(target)
+            self.select_magic(target)
+            return
 
-        spell = usable_spells[int(choice) - 1]
-        super().attack(target, magic=spell)
+        spell_number = int(choice)
+        if spell_number < 1 or spell_number > len(usable_spells):
+            print("無効な選択肢です。再度選択してください。")
+            self.select_magic(target)
+            return
+
+        spell = usable_spells[spell_number - 1]
+        spell.use(self, target)
 
     def info(self):
+        # 味方キャラクターの情報を表示します。
         print(f"名前:{self.name}\n体力:{self.health}\n攻撃力:{self.power}\nスピード:{self.speed}\nMP:{self.mp}")
-    
+
     def use_magic(self, spell, target):
+        # 外から魔法を使うときの処理です。
         if not spell.can_use(self):
             print(f"{self.name}はMPが足りないため、{spell.name}を使用できません。")
             return False
-        return super().attack(target, magic=spell)
+        return spell.use(self, target)
