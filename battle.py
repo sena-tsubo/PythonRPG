@@ -39,7 +39,7 @@ def has_living_fighter(fighters):
         if fighter.is_alive():
             return True
     return False
-
+#敵キャラクターをランダムでスポーンさせる関数を追加します。
 
 def main():
     print("=== RPG バトル開始 ===")

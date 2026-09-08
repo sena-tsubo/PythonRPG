@@ -1,10 +1,10 @@
 # 味方側の基底クラスです。
 try:
     from RPG.character import Character
-    from RPG.magic.magic import Magic
+    from RPG.magic.magic import Magic, RecoveryMagic
 except ImportError:
     from character import Character
-    from magic.magic import Magic
+    from magic.magic import Magic, RecoveryMagic
 #3. 味方キャラクターの基底クラスを作成します。
 
 class Ally(Character):
@@ -16,6 +16,7 @@ class Ally(Character):
             Magic("ファイア", 10, 25),
             Magic("アイス", 8, 20),
             Magic("サンダー", 12, 30),
+            RecoveryMagic("ヒール", 5, 30),
         ]
         super().__init__(name, health, power, speed, mp, magic_list=initial_magic)
 
@@ -95,9 +96,4 @@ class Ally(Character):
         # 味方キャラクターの情報を表示します。
         print(f"名前:{self.name}\n体力:{self.health}\n攻撃力:{self.power}\nスピード:{self.speed}\nMP:{self.mp}")
 
-    def use_magic(self, spell, target):
-        # 外から魔法を使うときの処理です。
-        if not spell.can_use(self):
-            print(f"{self.name}はMPが足りないため、{spell.name}を使用できません。")
-            return False
-        return spell.use(self, target)
+

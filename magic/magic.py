@@ -24,3 +24,21 @@ class Magic:
     def can_use(self, caster):
         # その魔法を使えるかどうかを確認します。
         return caster.mp >= self.mp_cost
+
+
+class RecoveryMagic(Magic):
+    # 対象の体力を回復する魔法です。
+    def use(self, caster, target):
+        # MPが足りない場合は、魔法を使わずに終了します。
+        if not self.can_use(caster):
+            return False
+
+        recovery = min(self.power, target.max_health - target.health)
+        if recovery <= 0:
+            print(f"{target.name}の体力はすでに最大です。")
+            return False
+
+        caster.use_mp(self.mp_cost)
+        target.heal(recovery)
+        print(f"{caster.name}は{self.name}を使用し、{target.name}の体力を{recovery}回復した。")
+        return True
