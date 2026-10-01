@@ -1,9 +1,9 @@
 try:
-    from .ally import Ally
-    from .enemy import Slime, Goblin
+    from .ally.ally import Ally
+    from .enemy.enemies import spawn_random_enemies
 except ImportError:
     from ally.ally import Ally
-    from enemy.enemy import Slime, Goblin
+    from enemy.enemies import spawn_random_enemies
 
 
 def build_battle_order(*fighters):
@@ -19,37 +19,20 @@ def build_battle_order(*fighters):
     return ordered
 
 
-def choose_target(current, allies, enemies):
-    # そのキャラクターが攻撃する相手を選びます。
-    if current in allies:
-        for enemy in enemies:
-            if enemy.is_alive():
-                return enemy
-        return None
-
-    for ally in allies:
-        if ally.is_alive():
-            return ally
-    return None
-
-
 def has_living_fighter(fighters):
     # 1人でも生存しているキャラクターがいるか確認します。
     for fighter in fighters:
         if fighter.is_alive():
             return True
     return False
-#敵キャラクターをランダムでスポーンさせる関数を追加します。
+
 
 def main():
     print("=== RPG バトル開始 ===")
     ally = Ally("勇者", 150, 20, 10, 30)
-    slime = Slime("スライム", 50, 10, 5, 0)
-    goblin = Goblin("ゴブリン", 80, 15, 8, 0)
-
     allies = [ally]
-    enemies = [slime, goblin]
-    battle_order = build_battle_order(ally, slime, goblin)
+    enemies = spawn_random_enemies()
+    battle_order = build_battle_order(*allies, *enemies)
 
     print("戦闘順:")
     for fighter in battle_order:
@@ -60,12 +43,11 @@ def main():
             if not current.is_alive():
                 continue
 
-            target = choose_target(current, allies, enemies)
-            if target is None:
-                continue
-
             print(f"\n[{current.name}のターン]")
-            current.attack(target)
+            if isinstance(current , Ally):
+                current.choose_target(enemies)
+            else:
+                current.choose_target(allies)
 
             if not has_living_fighter(allies) or not has_living_fighter(enemies):
                 break
@@ -73,14 +55,7 @@ def main():
     if has_living_fighter(allies):
         print(f"\n{ally.name}たちの勝利です。")
     else:
-        alive_enemy = None
-        for enemy in enemies:
-            if enemy.is_alive():
-                alive_enemy = enemy
-                break
-
-        winner_name = alive_enemy.name if alive_enemy is not None else "敵"
-        print(f"\n{winner_name}の勝利です。")
+        print("\n敵の勝利です。")
 
 
 if __name__ == "__main__":

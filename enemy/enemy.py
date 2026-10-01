@@ -8,7 +8,15 @@ class Enemy(Character):
     # 敵キャラクターの基底クラスです。
     def __init__(self, name, health, power, speed, mp):
         super().__init__(name, health, power, speed, mp)
+    def choose_target(self , allies):
+        #攻撃対象を選びます。敵は自動で生存している味方を選びます。
+        if not self.is_alive():
+            return
 
+        for ally in allies:
+            if ally.is_alive():
+                self.attack(ally)
+                return
 
 class Slime(Enemy):
     # 体力が低くなると回復するスライムです。
@@ -24,6 +32,7 @@ class Slime(Enemy):
             self.heal_used = True
         else:
             super().attack(target)
+    
 
 
 class Goblin(Enemy):

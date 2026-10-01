@@ -1,0 +1,19 @@
+[
+  {
+    "type": "slime",
+    "name": "スライム",
+    "health": 50,
+    "power": 10,
+    "speed": 5,
+    "mp": 0
+
+  },
+  {
+    "type": "goblin",
+    "name": "ゴブリン",
+    "health": 80,
+    "power": 15,
+    "speed": 8,
+    "mp": 0
+  }
+]
