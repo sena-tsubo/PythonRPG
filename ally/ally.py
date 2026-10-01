@@ -41,7 +41,25 @@ class Ally(Character):
                 return
             else:
                 print("無効な選択肢です。再度選択してください。")
+                return
+    def choose_target(self, enemies):
+        # 攻撃対象を選びます。
+        print(f"{self.name}の攻撃対象を選択してください。")
+        for index, enemy in enumerate(enemies):
+            print(f"{index+1}. {enemy.name} (体力: {enemy.health})")
+        choice = input("攻撃対象の番号を入力してください: ")
+        #isdigit()メソッドは、文字列が数字のみで構成されているかどうかを判定するためのメソッドです。
+        #文字列が数字のみで構成されている場合はTrueを返し、そうでない場合はFalseを返します。
+        if not choice.isdigit():
+            print("無効な選択肢です。再度選択してください。")
+            return self.choose_target(enemies)
 
+        target_index = int(choice) - 1
+        if target_index < 0 or target_index >= len(enemies):
+            print("無効な選択肢です。再度選択してください。")
+            return self.choose_target(enemies)
+
+        self.attack(enemies[target_index])
     def available_magic(self):
         # 使える魔法だけを取り出します。
         usable_magic = []
